@@ -4,9 +4,10 @@ const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT } = require('./config.js
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-const port = DB_PORT;
+const port = parseInt(DB_PORT, 10);
 
 app.use(cors());
 app.use(express.json());

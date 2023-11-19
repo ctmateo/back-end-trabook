@@ -1,26 +1,42 @@
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT } = require('./config.js');
+const { DATABASE_URL } = require('./config.js');
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-require('dotenv').config();
 
 const app = express();
-const port = parseInt(DB_PORT, 10);
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
+const url = require('url');
+const connectionData = url.parse(DATABASE_URL);
+
+// Configuración de SSL
+const sslQueryParam = new URL(DATABASE_URL).searchParams.get('ssl');
+const ssl = sslQueryParam ? JSON.parse(sslQueryParam) : null;
+
+
+
+// Obtener el nombre de usuario de la propiedad 'auth' de la URL
+const auth = connectionData.auth ? `${connectionData.auth}@` : '';
+const connectionConfig = {
+  host: connectionData.hostname,
+  user: connectionData.auth.split(':')[0],  // Obtener el nombre de usuario
+  password: connectionData.auth.split(':')[1],  // Obtener la contraseña
+  database: connectionData.pathname.replace('/', ''),
+  port: connectionData.port,
+  ssl: ssl,
+};
+
+// Creación del pool de conexión
 const pool = mysql.createPool({
-  host: DB_HOST,
-  user: DB_USER,
-  password: DB_PASSWORD,
-  database: DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  connectTimeout: 30000,
+  ...connectionConfig,
+  // Añade la siguiente línea para habilitar la conexión segura con SSL/TLS
+  ssl: ssl ? { ...ssl, rejectUnauthorized: false } : null,
 });
 
+// Obtención de conexión desde el pool
 pool.getConnection((err, connection) => {
   if (err) {
     console.error('Error connecting to the database:', err);
@@ -31,7 +47,7 @@ pool.getConnection((err, connection) => {
   }
 });
 
-
+// Rutas de la aplicación
 app.get('/', (req, res) => {
   const consulta = 'SELECT * FROM cards';
   pool.query(consulta, (error, resultados) => {
@@ -56,6 +72,7 @@ app.get('/blog', (req, res) => {
   });
 });
 
+// Inicio del servidor
 app.listen(port, "0.0.0.0", () => {
-  console.log('Ejecutado en el puerto ', DB_PORT);
+  console.log('Ejecutado en el puerto ', port);
 });

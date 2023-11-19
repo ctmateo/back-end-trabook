@@ -10,7 +10,6 @@ const port = parseInt(DB_PORT, 10);
 app.use(cors());
 app.use(express.json());
 
-// Crea un pool de conexiones
 const pool = mysql.createPool({
   host: DB_HOST,
   user: DB_USER,
@@ -21,11 +20,9 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-// No es necesario pool.connect() en este caso
 
 app.get('/', (req, res) => {
   const consulta = 'SELECT * FROM cards';
-  // Utiliza el pool para ejecutar consultas
   pool.query(consulta, (error, resultados) => {
     if (error) throw error;
     res.json(resultados);
@@ -34,7 +31,6 @@ app.get('/', (req, res) => {
 
 app.get('/bestvacation', (req, res) => {
   const consulta = 'SELECT * FROM cards_bestvacation';
-  // Utiliza el pool para ejecutar consultas
   pool.query(consulta, (error, resultados) => {
     if (error) throw error;
     res.json(resultados);
@@ -43,13 +39,12 @@ app.get('/bestvacation', (req, res) => {
 
 app.get('/blog', (req, res) => {
   const consulta = 'SELECT * FROM cards_blog';
-  // Utiliza el pool para ejecutar consultas
   pool.query(consulta, (error, resultados) => {
     if (error) throw error;
     res.json(resultados);
   });
 });
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log('corriendo en ', DB_PORT);
 });

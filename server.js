@@ -20,6 +20,16 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error connecting to the database:', err);
+  } else {
+    console.log('Connected to the database!');
+    // Luego de conectar, puedes liberar la conexión
+    connection.release();
+  }
+});
+
 
 app.get('/', (req, res) => {
   const consulta = 'SELECT * FROM cards';
@@ -46,5 +56,5 @@ app.get('/blog', (req, res) => {
 });
 
 app.listen(port, "0.0.0.0", () => {
-  console.log('corriendo en ', DB_PORT);
+  console.log('Ejecutado en el puerto ', DB_PORT);
 });

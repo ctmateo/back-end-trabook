@@ -1,5 +1,7 @@
 
 module.exports = {
-  DATABASE_URL:'mysql://cnku8p3w5xebkbnvzckf:pscale_pw_9i2wf0eUvzMV4bkmO4g5gs8m8uelbGecJGDHMdaiw4W@aws.connect.psdb.cloud/trabook_db?ssl={"rejectUnauthorized":true}'
-
+  
+  DATABASE_URL:'mysql://tzdv2z0024ljmjmfqpbl:pscale_pw_o3jl72v1EAnNKjzLJ1GiHPsOZ5Fsfli5tfiHZ8JUrqG@aws.connect.psdb.cloud/trabook_db?ssl={"rejectUnauthorized":true}',
+  DB_USER: process.env.DB_USER || 'tzdv2z0024ljmjmfqpbl',
+  DB_PASSWORD: process.env.DB_PASSWORD || 'pscale_pw_o3jl72v1EAnNKjzLJ1GiHPsOZ5Fsfli5tfiHZ8JUrqG'
 };

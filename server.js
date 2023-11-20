@@ -1,4 +1,4 @@
-const { DATABASE_URL } = require('./config.js');
+const { DATABASE_URL, DB_USER, DB_PASSWORD } = require('./config.js');
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -17,11 +17,10 @@ const sslQueryParam = new URL(DATABASE_URL).searchParams.get('ssl');
 const ssl = sslQueryParam ? JSON.parse(sslQueryParam) : null;
 
 
-const auth = connectionData.auth ? `${connectionData.auth}@` : '';
 const connectionConfig = {
   host: connectionData.hostname,
-  user: connectionData.auth.split(':')[0],  
-  password: connectionData.auth.split(':')[1],  
+  user: DB_USER,  
+  password: DB_PASSWORD,  
   database: connectionData.pathname.replace('/', ''),
   port: connectionData.port,
   ssl: ssl,

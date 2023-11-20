@@ -1,7 +1,7 @@
-require('dotenv').config(); 
+require('dotenv').config();
 
 const express = require('express');
-const mysql = require('mysql2');
+const { createPool } = require('mysql2/promise');
 const cors = require('cors');
 
 const app = express();
@@ -10,38 +10,46 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const connection = mysql.createConnection(process.env.DATABASE_URL);
+const pool = createPool({
+  database: 'trabook_db',
+  user: 'a66tz3ujdnjlafyjk598',
+  host: 'aws.connect.psdb.cloud',
+  password: 'pscale_pw_Ok2tJwot6wFw0ppozDIgLVtotYfW182N5Sx2UtTJfbT',
+  ssl: { rejectUnauthorized: false }
+});
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-  } else {
-    console.log('Connected to the database!');
+
+app.get('/', async (req, res) => {
+  try {
+    const consulta = 'SELECT * FROM cards';
+    const [resultados] = await pool.query(consulta);
+    res.json(resultados);
+  } catch (error) {
+    console.error('Error executing query:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
-app.get('/', (req, res) => {
-  const consulta = 'SELECT * FROM cards';
-  connection.query(consulta, (error, resultados) => {
-    if (error) throw error;
+app.get('/bestvacation', async (req, res) => {
+  try {
+    const consulta = 'SELECT * FROM cards_bestvacation';
+    const [resultados] = await pool.query(consulta);
     res.json(resultados);
-  });
+  } catch (error) {
+    console.error('Error executing query:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-app.get('/bestvacation', (req, res) => {
-  const consulta = 'SELECT * FROM cards_bestvacation';
-  connection.query(consulta, (error, resultados) => {
-    if (error) throw error;
+app.get('/blog', async (req, res) => {
+  try {
+    const consulta = 'SELECT * FROM cards_blog';
+    const [resultados] = await pool.query(consulta);
     res.json(resultados);
-  });
-});
-
-app.get('/blog', (req, res) => {
-  const consulta = 'SELECT * FROM cards_blog';
-  connection.query(consulta, (error, resultados) => {
-    if (error) throw error;
-    res.json(resultados);
-  });
+  } catch (error) {
+    console.error('Error executing query:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 app.listen(port, "0.0.0.0", () => {
